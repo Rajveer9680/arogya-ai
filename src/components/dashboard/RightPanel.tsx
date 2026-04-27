@@ -1,4 +1,5 @@
-import { Sparkles, Send, FileUp, AlertCircle, CheckCircle2, Brain } from "lucide-react";
+import { Sparkles, Send, AlertCircle, CheckCircle2, Brain } from "lucide-react";
+import { UploadReport } from "./UploadReport";
 
 const insights = [
   {
@@ -103,12 +104,6 @@ export const RightPanel = () => (
     </div>
 
     {/* Upload */}
-    <div className="rounded-3xl p-5 border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer text-center animate-fade-in">
-      <div className="h-10 w-10 mx-auto rounded-xl gradient-primary grid place-items-center mb-2 shadow-[var(--shadow-card)]">
-        <FileUp className="h-5 w-5 text-primary-foreground" />
-      </div>
-      <p className="text-xs font-semibold">Upload Medical Report</p>
-      <p className="text-[10px] text-muted-foreground mt-0.5">PDF, JPG, DICOM up to 20MB</p>
-    </div>
+    <UploadReport />
   </div>
 );
