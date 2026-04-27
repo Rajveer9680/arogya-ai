@@ -1,16 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Sidebar } from "@/components/dashboard/Sidebar";
+import { TopBar } from "@/components/dashboard/TopBar";
+import { StatCards } from "@/components/dashboard/StatCards";
+import { AnatomyView } from "@/components/dashboard/AnatomyView";
+import { RightPanel } from "@/components/dashboard/RightPanel";
+import { TrendsChart } from "@/components/dashboard/TrendsChart";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen flex w-full">
+      <Sidebar />
+      <main className="flex-1 p-6 lg:p-8 max-w-[1600px] mx-auto">
+        <TopBar />
+        <div className="mb-2">
+          <h1 className="font-display text-3xl font-bold">
+            Welcome back, <span className="text-gradient">Aarav</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">Here's your AI-powered health overview for today.</p>
+        </div>
+
+        <div className="mt-6 grid grid-cols-12 gap-5">
+          <div className="col-span-12 xl:col-span-8 flex flex-col gap-5">
+            <StatCards />
+            <AnatomyView />
+            <TrendsChart />
+          </div>
+          <div className="col-span-12 xl:col-span-4">
+            <RightPanel />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
