@@ -1,12 +1,12 @@
-import { LayoutDashboard, MessageSquare, History, FileText, Settings, Activity } from "lucide-react";
+import { LayoutDashboard, Bot, FolderKanban, Calendar, UserCog, Activity, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard },
-  { title: "AI Chat", icon: MessageSquare },
-  { title: "History", icon: History },
-  { title: "Reports", icon: FileText },
-  { title: "Settings", icon: Settings },
+  { title: "AI Assistant", icon: Bot },
+  { title: "File Management", icon: FolderKanban },
+  { title: "Calendar", icon: Calendar },
+  { title: "User Settings", icon: UserCog },
 ];
 
 export const Sidebar = () => {
@@ -23,37 +23,53 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      <nav className="flex flex-col gap-1.5">
-        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-3 mb-2">Menu</p>
+      <nav className="flex flex-col gap-2">
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-3 mb-1">Menu</p>
         {items.map((item) => {
           const isActive = active === item.title;
           return (
             <button
               key={item.title}
               onClick={() => setActive(item.title)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-[var(--transition-smooth)] group relative ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-[var(--transition-smooth)] group relative overflow-hidden ${
                 isActive
-                  ? "gradient-primary text-primary-foreground shadow-[var(--shadow-card)]"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  ? "gradient-primary text-primary-foreground shadow-[var(--shadow-glow)] scale-[1.02]"
+                  : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground hover:translate-x-1"
               }`}
             >
-              <item.icon className="h-[18px] w-[18px]" />
-              {item.title}
-              {isActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary-foreground/80" />}
+              {isActive && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full bg-primary-foreground/90" />
+              )}
+              <span
+                className={`grid place-items-center h-9 w-9 rounded-lg transition-all ${
+                  isActive
+                    ? "bg-primary-foreground/20 backdrop-blur-sm"
+                    : "bg-secondary/60 group-hover:bg-primary/10 group-hover:text-primary"
+                }`}
+              >
+                <item.icon className="h-[18px] w-[18px]" strokeWidth={2.2} />
+              </span>
+              <span className="flex-1 text-left">{item.title}</span>
+              {isActive && (
+                <span className="h-2 w-2 rounded-full bg-primary-foreground glow-pulse" />
+              )}
             </button>
           );
         })}
       </nav>
 
-      <div className="mt-auto p-4 rounded-2xl glass-card text-center">
-        <div className="h-10 w-10 mx-auto rounded-full gradient-primary grid place-items-center mb-2">
-          <Activity className="h-5 w-5 text-primary-foreground" />
+      <div className="mt-auto p-4 rounded-2xl glass-card text-center relative overflow-hidden">
+        <div className="absolute inset-0 gradient-primary opacity-10" />
+        <div className="relative">
+          <div className="h-10 w-10 mx-auto rounded-full gradient-primary grid place-items-center mb-2 shadow-[var(--shadow-glow)]">
+            <Sparkles className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <p className="text-xs font-semibold">Upgrade to Pro</p>
+          <p className="text-[10px] text-muted-foreground mt-1">Unlock advanced AI insights</p>
+          <button className="mt-3 w-full text-xs gradient-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+            Upgrade
+          </button>
         </div>
-        <p className="text-xs font-semibold">Upgrade to Pro</p>
-        <p className="text-[10px] text-muted-foreground mt-1">Unlock advanced AI insights</p>
-        <button className="mt-3 w-full text-xs gradient-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
-          Upgrade
-        </button>
       </div>
     </aside>
   );
