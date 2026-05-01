@@ -238,6 +238,13 @@ const CalendarPage = () => {
   );
 };
 
+const toneClasses: Record<string, string> = {
+  primary: "bg-primary/10 text-primary",
+  warning: "bg-warning/10 text-warning",
+  accent: "bg-accent/10 text-accent",
+  success: "bg-success/10 text-success",
+};
+
 const StatChip = ({
   icon: Icon,
   label,
@@ -250,7 +257,7 @@ const StatChip = ({
   tone: "primary" | "warning" | "accent" | "success";
 }) => (
   <div className="glass-card rounded-2xl p-4 flex items-center gap-3">
-    <div className={cn("h-10 w-10 rounded-xl grid place-items-center", `bg-${tone}/10 text-${tone}`)}>
+    <div className={cn("h-10 w-10 rounded-xl grid place-items-center", toneClasses[tone])}>
       <Icon className="h-5 w-5" />
     </div>
     <div>
