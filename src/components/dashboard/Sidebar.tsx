@@ -31,27 +31,27 @@ export const Sidebar = () => {
             <button
               key={item.title}
               onClick={() => setActive(item.title)}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-[var(--transition-smooth)] group relative overflow-hidden ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-[var(--transition-smooth)] group relative ${
                 isActive
-                  ? "gradient-primary text-primary-foreground shadow-[var(--shadow-glow)] scale-[1.02]"
-                  : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground hover:translate-x-1"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:translate-x-1"
               }`}
             >
               {isActive && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full bg-primary-foreground/90" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 rounded-r-full bg-primary" />
               )}
               <span
                 className={`grid place-items-center h-9 w-9 rounded-lg transition-all ${
                   isActive
-                    ? "bg-primary-foreground/20 backdrop-blur-sm"
+                    ? "bg-primary/10 text-primary"
                     : "bg-secondary/60 group-hover:bg-primary/10 group-hover:text-primary"
                 }`}
               >
                 <item.icon className="h-[18px] w-[18px]" strokeWidth={2.2} />
               </span>
-              <span className="flex-1 text-left">{item.title}</span>
+              <span className={`flex-1 text-left ${isActive ? "font-semibold" : ""}`}>{item.title}</span>
               {isActive && (
-                <span className="h-2 w-2 rounded-full bg-primary-foreground glow-pulse" />
+                <span className="h-2 w-2 rounded-full bg-primary glow-pulse" />
               )}
             </button>
           );
