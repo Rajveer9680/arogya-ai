@@ -1,16 +1,16 @@
 import { LayoutDashboard, Bot, FolderKanban, Calendar, UserCog, Activity, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const items = [
-  { title: "Dashboard", icon: LayoutDashboard },
-  { title: "AI Assistant", icon: Bot },
-  { title: "File Management", icon: FolderKanban },
-  { title: "Calendar", icon: Calendar },
-  { title: "User Settings", icon: UserCog },
+  { title: "Dashboard", icon: LayoutDashboard, to: "/" },
+  { title: "AI Assistant", icon: Bot, to: "/assistant" },
+  { title: "File Management", icon: FolderKanban, to: "/files" },
+  { title: "Calendar", icon: Calendar, to: "/calendar" },
+  { title: "User Settings", icon: UserCog, to: "/settings" },
 ];
 
 export const Sidebar = () => {
-  const [active, setActive] = useState("Dashboard");
+  const { pathname } = useLocation();
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 p-5 flex flex-col gap-8 glass-panel border-r border-border/50">
       <div className="flex items-center gap-3">
@@ -26,11 +26,11 @@ export const Sidebar = () => {
       <nav className="flex flex-col gap-2">
         <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold px-3 mb-1">Menu</p>
         {items.map((item) => {
-          const isActive = active === item.title;
+          const isActive = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
           return (
-            <button
+            <Link
               key={item.title}
-              onClick={() => setActive(item.title)}
+              to={item.to}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-[var(--transition-smooth)] group relative ${
                 isActive
                   ? "text-primary"
@@ -53,7 +53,7 @@ export const Sidebar = () => {
               {isActive && (
                 <span className="h-2 w-2 rounded-full bg-primary glow-pulse" />
               )}
-            </button>
+            </Link>
           );
         })}
       </nav>
