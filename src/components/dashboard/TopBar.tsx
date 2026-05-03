@@ -1,9 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Bell, Mic, Sparkles, FileText, Calendar as CalIcon, MessageSquare, X } from "lucide-react";
+import { Search, Bell, Mic, Sparkles, FileText, Calendar as CalIcon, MessageSquare, X, LogOut, User as UserIcon, Settings } from "lucide-react";
 import { loadReports, MedicalReport, formatDate } from "@/lib/reportStore";
 import { loadEvents, CalendarEvent } from "@/lib/calendarStore";
 import { loadConversations, Conversation } from "@/lib/chatStore";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+type Profile = {
+  full_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  provider: string | null;
+};
 
 type ResultGroup = {
   reports: MedicalReport[];
@@ -14,16 +23,61 @@ type ResultGroup = {
 export const TopBar = () => {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, email, avatar_url, provider")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data) {
+        setProfile(data);
+      } else {
+        setProfile({
+          full_name: (user.user_metadata as any)?.full_name || (user.user_metadata as any)?.name || null,
+          email: user.email ?? null,
+          avatar_url: (user.user_metadata as any)?.avatar_url || (user.user_metadata as any)?.picture || null,
+          provider: (user.app_metadata as any)?.provider ?? "email",
+        });
+      }
+    };
+    loadProfile();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => loadProfile());
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out");
+    navigate("/auth");
+  };
+
+  const displayName = profile?.full_name || profile?.email?.split("@")[0] || "Account";
+  const initials = (displayName || "U")
+    .split(" ")
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
 
   const results: ResultGroup = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -196,16 +250,60 @@ export const TopBar = () => {
         </span>
       </button>
 
-      {/* User pill */}
-      <div className="flex items-center gap-3 h-12 pl-1.5 pr-4 rounded-full glass-card border border-border/60 shrink-0">
-        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-700 grid place-items-center text-white font-semibold text-xs shadow-sm">
-          AS
-        </div>
-        <div className="hidden sm:block">
-          <p className="text-sm font-semibold leading-tight">Aarav Sharma</p>
-          <p className="text-[11px] text-muted-foreground leading-tight">Premium Member</p>
-        </div>
+      {/* User pill with menu */}
+      <div ref={menuRef} className="relative shrink-0">
+        <button
+          onClick={() => setMenuOpen((o) => !o)}
+          className="flex items-center gap-3 h-12 pl-1.5 pr-4 rounded-full glass-card border border-border/60 hover:bg-secondary/70 transition-colors"
+        >
+          {profile?.avatar_url ? (
+            <img src={profile.avatar_url} alt={displayName} className="h-9 w-9 rounded-full object-cover" />
+          ) : (
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-700 grid place-items-center text-white font-semibold text-xs shadow-sm">
+              {initials}
+            </div>
+          )}
+          <div className="hidden sm:block text-left">
+            <p className="text-sm font-semibold leading-tight">{displayName}</p>
+            <p className="text-[11px] text-muted-foreground leading-tight capitalize">
+              {profile?.provider === "google" ? "Google account" : profile?.email || "Member"}
+            </p>
+          </div>
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl glass-card border border-border/60 shadow-[var(--shadow-elevated)] overflow-hidden z-50">
+            <div className="p-4 border-b border-border/40 flex items-center gap-3">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt={displayName} className="h-10 w-10 rounded-full object-cover" />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-amber-700 grid place-items-center text-white font-semibold text-xs">
+                  {initials}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-sm font-semibold truncate">{displayName}</p>
+                <p className="text-[11px] text-muted-foreground truncate">{profile?.email}</p>
+              </div>
+            </div>
+            <div className="p-2">
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
+                <UserIcon className="h-4 w-4 text-muted-foreground" /> Profile
+              </button>
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
+                <Settings className="h-4 w-4 text-muted-foreground" /> Settings
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" /> Sign out
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
     </header>
   );
 };
