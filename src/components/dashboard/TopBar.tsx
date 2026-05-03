@@ -23,16 +23,61 @@ type ResultGroup = {
 export const TopBar = () => {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, email, avatar_url, provider")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (data) {
+        setProfile(data);
+      } else {
+        setProfile({
+          full_name: (user.user_metadata as any)?.full_name || (user.user_metadata as any)?.name || null,
+          email: user.email ?? null,
+          avatar_url: (user.user_metadata as any)?.avatar_url || (user.user_metadata as any)?.picture || null,
+          provider: (user.app_metadata as any)?.provider ?? "email",
+        });
+      }
+    };
+    loadProfile();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => loadProfile());
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out");
+    navigate("/auth");
+  };
+
+  const displayName = profile?.full_name || profile?.email?.split("@")[0] || "Account";
+  const initials = (displayName || "U")
+    .split(" ")
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
 
   const results: ResultGroup = useMemo(() => {
     const q = query.trim().toLowerCase();
