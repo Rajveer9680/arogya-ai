@@ -1,9 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Bell, Mic, Sparkles, FileText, Calendar as CalIcon, MessageSquare, X } from "lucide-react";
+import { Search, Bell, Mic, Sparkles, FileText, Calendar as CalIcon, MessageSquare, X, LogOut, User as UserIcon, Settings } from "lucide-react";
 import { loadReports, MedicalReport, formatDate } from "@/lib/reportStore";
 import { loadEvents, CalendarEvent } from "@/lib/calendarStore";
 import { loadConversations, Conversation } from "@/lib/chatStore";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+type Profile = {
+  full_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  provider: string | null;
+};
 
 type ResultGroup = {
   reports: MedicalReport[];
