@@ -250,16 +250,60 @@ export const TopBar = () => {
         </span>
       </button>
 
-      {/* User pill */}
-      <div className="flex items-center gap-3 h-12 pl-1.5 pr-4 rounded-full glass-card border border-border/60 shrink-0">
-        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-700 grid place-items-center text-white font-semibold text-xs shadow-sm">
-          AS
-        </div>
-        <div className="hidden sm:block">
-          <p className="text-sm font-semibold leading-tight">Aarav Sharma</p>
-          <p className="text-[11px] text-muted-foreground leading-tight">Premium Member</p>
-        </div>
+      {/* User pill with menu */}
+      <div ref={menuRef} className="relative shrink-0">
+        <button
+          onClick={() => setMenuOpen((o) => !o)}
+          className="flex items-center gap-3 h-12 pl-1.5 pr-4 rounded-full glass-card border border-border/60 hover:bg-secondary/70 transition-colors"
+        >
+          {profile?.avatar_url ? (
+            <img src={profile.avatar_url} alt={displayName} className="h-9 w-9 rounded-full object-cover" />
+          ) : (
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-700 grid place-items-center text-white font-semibold text-xs shadow-sm">
+              {initials}
+            </div>
+          )}
+          <div className="hidden sm:block text-left">
+            <p className="text-sm font-semibold leading-tight">{displayName}</p>
+            <p className="text-[11px] text-muted-foreground leading-tight capitalize">
+              {profile?.provider === "google" ? "Google account" : profile?.email || "Member"}
+            </p>
+          </div>
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl glass-card border border-border/60 shadow-[var(--shadow-elevated)] overflow-hidden z-50">
+            <div className="p-4 border-b border-border/40 flex items-center gap-3">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt={displayName} className="h-10 w-10 rounded-full object-cover" />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-amber-700 grid place-items-center text-white font-semibold text-xs">
+                  {initials}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="text-sm font-semibold truncate">{displayName}</p>
+                <p className="text-[11px] text-muted-foreground truncate">{profile?.email}</p>
+              </div>
+            </div>
+            <div className="p-2">
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
+                <UserIcon className="h-4 w-4 text-muted-foreground" /> Profile
+              </button>
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
+                <Settings className="h-4 w-4 text-muted-foreground" /> Settings
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="h-4 w-4" /> Sign out
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
     </header>
   );
 };
