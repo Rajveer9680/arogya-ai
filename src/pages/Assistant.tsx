@@ -94,7 +94,7 @@ const Assistant = () => {
 
         <div className="flex-1 grid grid-cols-12 gap-5 min-h-[70vh]">
           {/* History sidebar */}
-          <aside className="col-span-12 lg:col-span-4 xl:col-span-3 glass-card rounded-3xl p-4 flex flex-col">
+          <aside className="order-2 col-span-12 lg:col-span-4 xl:col-span-3 glass-card rounded-3xl p-4 flex flex-col">
             <button
               onClick={startNew}
               className="w-full h-10 rounded-xl gradient-primary text-primary-foreground text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-[var(--shadow-glow)]"
@@ -157,8 +157,8 @@ const Assistant = () => {
           </aside>
 
           {/* Chat panel */}
-          <section className="col-span-12 lg:col-span-8 xl:col-span-9 glass-card rounded-3xl flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-5 border-b border-border/50">
+          <section className="order-1 col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-1 pb-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl gradient-primary grid place-items-center shadow-[var(--shadow-glow)]">
                   <Brain className="h-5 w-5 text-primary-foreground" />
@@ -173,7 +173,7 @@ const Assistant = () => {
               <Sparkles className="h-5 w-5 text-primary" />
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-3">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto py-2 space-y-3">
               {!active && (
                 <div className="h-full grid place-items-center text-center text-muted-foreground">
                   <div>
@@ -200,7 +200,7 @@ const Assistant = () => {
               ))}
             </div>
 
-            <div className="p-4 border-t border-border/50">
+            <div className="pt-3 border-t border-border/50 mt-2">
               <div className="relative">
                 <input
                   value={input}
