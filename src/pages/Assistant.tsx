@@ -94,7 +94,7 @@ const Assistant = () => {
 
         <div className="flex-1 grid grid-cols-12 gap-5 min-h-[70vh]">
           {/* History sidebar */}
-          <aside className="col-span-12 lg:col-span-4 xl:col-span-3 glass-card rounded-3xl p-4 flex flex-col">
+          <aside className="order-2 col-span-12 lg:col-span-4 xl:col-span-3 glass-card rounded-3xl p-4 flex flex-col">
             <button
               onClick={startNew}
               className="w-full h-10 rounded-xl gradient-primary text-primary-foreground text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-[var(--shadow-glow)]"
@@ -157,7 +157,7 @@ const Assistant = () => {
           </aside>
 
           {/* Chat panel */}
-          <section className="col-span-12 lg:col-span-8 xl:col-span-9 glass-card rounded-3xl flex flex-col overflow-hidden">
+          <section className="order-1 col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col overflow-hidden">
             <div className="flex items-center justify-between p-5 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl gradient-primary grid place-items-center shadow-[var(--shadow-glow)]">
