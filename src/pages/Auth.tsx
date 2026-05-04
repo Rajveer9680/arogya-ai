@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" className="h-5 w-5">
@@ -75,7 +76,8 @@ export default function Auth() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4">
       <Card className="glass-card w-full max-w-md p-8 space-y-6">
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-3">
+          <img src={logo} alt="ArogyaAI logo" className="h-20 w-20 mx-auto" />
           <h1 className="text-3xl font-semibold text-gradient">ArogyaAI</h1>
           <p className="text-sm text-muted-foreground">Sign in to your health dashboard</p>
         </div>

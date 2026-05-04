@@ -1,5 +1,6 @@
-import { LayoutDashboard, Bot, FolderKanban, Calendar, UserCog, Activity, Sparkles } from "lucide-react";
+import { LayoutDashboard, Bot, FolderKanban, Calendar, UserCog, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import logo from "@/assets/logo.png";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, to: "/" },
@@ -14,9 +15,7 @@ export const Sidebar = () => {
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 p-5 flex flex-col gap-8 glass-panel border-r border-border/50">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl gradient-primary grid place-items-center shadow-[var(--shadow-glow)]">
-          <Activity className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
-        </div>
+        <img src={logo} alt="ArogyaAI" className="h-10 w-10 rounded-xl" />
         <div>
           <h1 className="font-display font-bold text-lg leading-none">ArogyaAI</h1>
           <p className="text-[10px] text-muted-foreground tracking-widest uppercase mt-1">Smart Health</p>
