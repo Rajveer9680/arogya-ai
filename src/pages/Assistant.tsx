@@ -200,9 +200,7 @@ const Assistant = () => {
               ))}
             </div>
 
-            <div className="pt-3">
-
-            <div className="p-4 border-t border-border/50">
+            <div className="pt-3 border-t border-border/50 mt-2">
               <div className="relative">
                 <input
                   value={input}
