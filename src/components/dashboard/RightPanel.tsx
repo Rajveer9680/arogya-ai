@@ -1,5 +1,5 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
-import { UploadReport } from "./UploadReport";
+import { HealthyHabits } from "./HealthyHabits";
 
 const insights = [
   {
@@ -52,7 +52,7 @@ export const RightPanel = () => (
       </div>
     </div>
 
-    {/* Upload */}
-    <UploadReport />
+    {/* Healthy Habits */}
+    <HealthyHabits />
   </div>
 );
