@@ -109,17 +109,14 @@ const CalendarPage = () => {
     <div className="min-h-screen flex w-full">
       <Sidebar />
       <main className="flex-1 p-6 lg:p-8 max-w-[1600px] mx-auto">
-        <TopBar />
+        <TopBar
+          title={<>Health <span className="text-gradient">Calendar</span></>}
+          subtitle="Track appointments, medication, visits and daily wellness logs."
+        />
 
         <div className="flex items-end justify-between gap-4 mb-6">
-          <div>
-            <h1 className="font-display text-3xl font-bold">
-              Health <span className="text-gradient">Calendar</span>
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Track appointments, medication, visits and daily wellness logs.
-            </p>
-          </div>
+          <div />
+
           <AddEventDialog
             open={open}
             setOpen={setOpen}

@@ -92,18 +92,15 @@ const FilesPage = () => {
     <div className="min-h-screen flex w-full">
       <Sidebar />
       <main className="flex-1 p-6 lg:p-8 max-w-[1600px] mx-auto">
-        <TopBar />
+        <TopBar
+          title={<>File <span className="text-gradient">Management</span></>}
+          subtitle="Manage all your medical reports with AI-powered insights."
+        />
 
         {/* Header */}
         <div className="flex items-end justify-between flex-wrap gap-4 mb-6">
-          <div>
-            <h1 className="font-display text-3xl font-bold">
-              File <span className="text-gradient">Management</span>
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage all your medical reports with AI-powered insights.
-            </p>
-          </div>
+          <div />
+
           <div className="flex items-center gap-3">
             <input
               ref={inputRef}
