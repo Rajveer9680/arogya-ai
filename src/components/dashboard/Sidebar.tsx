@@ -1,6 +1,8 @@
 import { LayoutDashboard, Bot, FolderKanban, Calendar, UserCog, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 import logo from "@/assets/logo.png";
+import { PricingDialog } from "@/components/PricingDialog";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, to: "/" },
@@ -12,6 +14,7 @@ const items = [
 
 export const Sidebar = () => {
   const { pathname } = useLocation();
+  const [pricingOpen, setPricingOpen] = useState(false);
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 p-5 flex flex-col gap-8 glass-panel border-r border-border/50">
       <div className="flex items-center gap-3">
