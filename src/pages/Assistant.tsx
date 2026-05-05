@@ -83,14 +83,10 @@ const Assistant = () => {
     <div className="min-h-screen flex w-full">
       <Sidebar />
       <main className="flex-1 p-6 lg:p-8 max-w-[1600px] mx-auto flex flex-col">
-        <TopBar />
-
-        <div className="mb-6">
-          <h1 className="font-display text-3xl font-bold">
-            AI <span className="text-gradient">Assistant</span>
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">All your conversations with the AI Health Assistant.</p>
-        </div>
+        <TopBar
+          title={<>AI <span className="text-gradient">Assistant</span></>}
+          subtitle="All your conversations with the AI Health Assistant."
+        />
 
         <div className="flex-1 grid grid-cols-12 gap-5 min-h-[70vh]">
           {/* History sidebar */}
