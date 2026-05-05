@@ -1,6 +1,8 @@
 import { LayoutDashboard, Bot, FolderKanban, Calendar, UserCog, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 import logo from "@/assets/logo.png";
+import { PricingDialog } from "@/components/PricingDialog";
 
 const items = [
   { title: "Dashboard", icon: LayoutDashboard, to: "/" },
@@ -12,6 +14,7 @@ const items = [
 
 export const Sidebar = () => {
   const { pathname } = useLocation();
+  const [pricingOpen, setPricingOpen] = useState(false);
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 p-5 flex flex-col gap-8 glass-panel border-r border-border/50">
       <div className="flex items-center gap-3">
@@ -65,11 +68,12 @@ export const Sidebar = () => {
           </div>
           <p className="text-xs font-semibold">Upgrade to Pro</p>
           <p className="text-[10px] text-muted-foreground mt-1">Unlock advanced AI insights</p>
-          <button className="mt-3 w-full text-xs gradient-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+          <button onClick={() => setPricingOpen(true)} className="mt-3 w-full text-xs gradient-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
             Upgrade
           </button>
         </div>
       </div>
+      <PricingDialog open={pricingOpen} onOpenChange={setPricingOpen} />
     </aside>
   );
 };

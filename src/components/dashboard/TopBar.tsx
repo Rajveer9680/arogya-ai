@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, LogOut, User as UserIcon, Settings } from "lucide-react";
+import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { NotificationBell } from "./NotificationBell";
+import { Link } from "react-router-dom";
 
 type Profile = {
   full_name: string | null;
@@ -83,13 +85,8 @@ export const TopBar = ({ title, subtitle }: TopBarProps) => {
         )}
       </div>
 
-      {/* Notification pill */}
-      <button className="relative h-12 w-12 rounded-full glass-card border border-border/60 grid place-items-center hover:bg-secondary transition-colors shrink-0">
-        <Bell className="h-[18px] w-[18px] text-foreground" />
-        <span className="absolute -top-0.5 -right-0.5 min-w-5 h-5 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold grid place-items-center ring-2 ring-background">
-          3
-        </span>
-      </button>
+      {/* Notifications */}
+      <NotificationBell />
 
       {/* User pill with menu */}
       <div ref={menuRef} className="relative shrink-0">
@@ -128,12 +125,12 @@ export const TopBar = ({ title, subtitle }: TopBarProps) => {
               </div>
             </div>
             <div className="p-2">
-              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
+              <Link to="/settings" onClick={() => setMenuOpen(false)} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
                 <UserIcon className="h-4 w-4 text-muted-foreground" /> Profile
-              </button>
-              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
+              </Link>
+              <Link to="/settings" onClick={() => setMenuOpen(false)} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm hover:bg-secondary/70 transition-colors">
                 <Settings className="h-4 w-4 text-muted-foreground" /> Settings
-              </button>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors"

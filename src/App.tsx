@@ -9,6 +9,7 @@ import CalendarPage from "./pages/CalendarPage.tsx";
 import Files from "./pages/Files.tsx";
 import ReportViewer from "./pages/ReportViewer.tsx";
 import Auth from "./pages/Auth.tsx";
+import Settings from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { FloatingChat } from "@/components/dashboard/FloatingChat";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
           <Route path="/files" element={<ProtectedRoute><Files /></ProtectedRoute>} />
           <Route path="/files/:id" element={<ProtectedRoute><ReportViewer /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
