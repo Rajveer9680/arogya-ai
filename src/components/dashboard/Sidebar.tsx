@@ -68,11 +68,12 @@ export const Sidebar = () => {
           </div>
           <p className="text-xs font-semibold">Upgrade to Pro</p>
           <p className="text-[10px] text-muted-foreground mt-1">Unlock advanced AI insights</p>
-          <button className="mt-3 w-full text-xs gradient-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+          <button onClick={() => setPricingOpen(true)} className="mt-3 w-full text-xs gradient-primary text-primary-foreground py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
             Upgrade
           </button>
         </div>
       </div>
+      <PricingDialog open={pricingOpen} onOpenChange={setPricingOpen} />
     </aside>
   );
 };
