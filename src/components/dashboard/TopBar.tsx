@@ -1,9 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Search, Bell, Mic, Sparkles, FileText, Calendar as CalIcon, MessageSquare, X, LogOut, User as UserIcon, Settings } from "lucide-react";
-import { loadReports, MedicalReport, formatDate } from "@/lib/reportStore";
-import { loadEvents, CalendarEvent } from "@/lib/calendarStore";
-import { loadConversations, Conversation } from "@/lib/chatStore";
+import { useEffect, useRef, useState, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { Bell, LogOut, User as UserIcon, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -14,24 +11,19 @@ type Profile = {
   provider: string | null;
 };
 
-type ResultGroup = {
-  reports: MedicalReport[];
-  events: CalendarEvent[];
-  chats: Conversation[];
-};
+interface TopBarProps {
+  title?: ReactNode;
+  subtitle?: ReactNode;
+}
 
-export const TopBar = () => {
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
+export const TopBar = ({ title, subtitle }: TopBarProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const wrapRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", onClick);
