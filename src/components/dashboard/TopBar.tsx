@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, LogOut, User as UserIcon, Settings } from "lucide-react";
+import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { NotificationBell } from "./NotificationBell";
+import { Link } from "react-router-dom";
 
 type Profile = {
   full_name: string | null;
