@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, User as UserIcon, Settings } from "lucide-react";
+import { LogOut, User as UserIcon, Settings, Sun, Moon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { NotificationBell } from "./NotificationBell";
 import { Link } from "react-router-dom";
+import { applyTheme, getStoredTheme, type Theme } from "@/lib/theme";
 
 type Profile = {
   full_name: string | null;
@@ -23,6 +24,19 @@ export const TopBar = ({ title, subtitle }: TopBarProps) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [theme, setTheme] = useState<Theme>(getStoredTheme());
+
+  useEffect(() => {
+    const handler = (e: Event) => setTheme((e as CustomEvent).detail as Theme);
+    window.addEventListener("themechange", handler);
+    return () => window.removeEventListener("themechange", handler);
+  }, []);
+
+  const toggleTheme = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    setTheme(next);
+  };
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -84,6 +98,15 @@ export const TopBar = ({ title, subtitle }: TopBarProps) => {
           <p className="text-sm text-muted-foreground mt-0.5 truncate">{subtitle}</p>
         )}
       </div>
+
+      {/* Theme toggle */}
+      <button
+        onClick={toggleTheme}
+        aria-label="Toggle theme"
+        className="h-10 w-10 grid place-items-center rounded-full glass-card border border-border/60 hover:bg-secondary/70 transition-colors shrink-0"
+      >
+        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
 
       {/* Notifications */}
       <NotificationBell />
