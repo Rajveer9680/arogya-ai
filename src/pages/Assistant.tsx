@@ -153,7 +153,7 @@ const Assistant = () => {
           </aside>
 
           {/* Chat panel */}
-          <section className="order-1 col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col overflow-hidden">
+          <section className="order-1 col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col overflow-hidden bg-card border border-border/60 rounded-3xl p-5 shadow-[var(--shadow-card)]">
             <div className="flex items-center justify-between px-1 pb-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl gradient-primary grid place-items-center shadow-[var(--shadow-glow)]">
