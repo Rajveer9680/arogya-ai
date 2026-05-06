@@ -3,7 +3,9 @@ import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Save, Moon, Sun, Bell, Mail, HeartPulse } from "lucide-react";
+import { Loader2, Save, Moon, Sun, Bell, Mail, HeartPulse, KeyRound, Trash2, AlertTriangle } from "lucide-react";
+import { applyTheme, getStoredTheme, type Theme } from "@/lib/theme";
+import { useNavigate } from "react-router-dom";
 
 type Profile = {
   full_name: string | null;
@@ -16,13 +18,14 @@ type Profile = {
 };
 
 type Prefs = {
-  theme: string;
+  theme: Theme;
   email_notifications: boolean;
   push_notifications: boolean;
   health_reminders: boolean;
 };
 
 const Settings = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -36,11 +39,26 @@ const Settings = () => {
     avatar_url: "",
   });
   const [prefs, setPrefs] = useState<Prefs>({
-    theme: "dark",
+    theme: getStoredTheme(),
     email_notifications: true,
     push_notifications: true,
     health_reminders: true,
   });
+
+  // Password
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [changingPwd, setChangingPwd] = useState(false);
+
+  // Delete account
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  // Push notification permission
+  const [pushPerm, setPushPerm] = useState<NotificationPermission | "unsupported">(
+    typeof Notification !== "undefined" ? Notification.permission : "unsupported",
+  );
 
   useEffect(() => {
     const load = async () => {
@@ -52,21 +70,35 @@ const Settings = () => {
         supabase.from("profiles").select("full_name,email,phone,date_of_birth,gender,country,avatar_url").eq("user_id", user.id).maybeSingle(),
         supabase.from("user_preferences").select("theme,email_notifications,push_notifications,health_reminders").eq("user_id", user.id).maybeSingle(),
       ]);
-      if (p) setProfile({ ...profile, ...p });
+      if (p) setProfile((prev) => ({ ...prev, ...p }));
       if (pr) {
-        setPrefs(pr);
-        applyTheme(pr.theme);
+        const t: Theme = pr.theme === "light" ? "light" : "dark";
+        setPrefs({ ...pr, theme: t });
+        applyTheme(t);
       }
       setLoading(false);
     };
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const applyTheme = (theme: string) => {
-    const root = document.documentElement;
-    if (theme === "light") root.classList.remove("dark");
-    else root.classList.add("dark");
+  const setTheme = (t: Theme) => {
+    setPrefs((p) => ({ ...p, theme: t }));
+    applyTheme(t);
+  };
+
+  const requestPushPerm = async () => {
+    if (typeof Notification === "undefined") {
+      toast.error("Notifications are not supported in this browser");
+      return;
+    }
+    const res = await Notification.requestPermission();
+    setPushPerm(res);
+    if (res === "granted") {
+      toast.success("Push notifications enabled");
+      new Notification("ArogyaAI", { body: "You'll now receive health updates here." });
+    } else {
+      toast.warning("Permission not granted");
+    }
   };
 
   const saveAll = async () => {
@@ -95,6 +127,38 @@ const Settings = () => {
     } else {
       applyTheme(prefs.theme);
       toast.success("Settings saved");
+    }
+  };
+
+  const changePassword = async () => {
+    if (newPwd.length < 8) return toast.error("Password must be at least 8 characters");
+    if (newPwd !== confirmPwd) return toast.error("Passwords do not match");
+    setChangingPwd(true);
+    const { error } = await supabase.auth.updateUser({ password: newPwd });
+    setChangingPwd(false);
+    if (error) return toast.error(error.message);
+    setNewPwd("");
+    setConfirmPwd("");
+    toast.success("Password updated");
+  };
+
+  const deleteAccount = async () => {
+    if (deleteText !== "DELETE") return toast.error('Type "DELETE" to confirm');
+    setDeleting(true);
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess.session?.access_token;
+    try {
+      const { error } = await supabase.functions.invoke("delete-account", {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (error) throw error;
+      await supabase.auth.signOut();
+      toast.success("Account deleted");
+      navigate("/auth");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to delete account");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -192,7 +256,7 @@ const Settings = () => {
                   {(["dark", "light"] as const).map((t) => (
                     <button
                       key={t}
-                      onClick={() => setPrefs({ ...prefs, theme: t })}
+                      onClick={() => setTheme(t)}
                       className={`flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold border capitalize ${
                         prefs.theme === t ? "border-primary bg-primary/10 text-primary" : "border-border/60 bg-secondary/40"
                       }`}
@@ -209,6 +273,15 @@ const Settings = () => {
                 <Toggle checked={prefs.push_notifications} onChange={(v) => setPrefs({ ...prefs, push_notifications: v })} icon={Bell} label="Push notifications" desc="In-app real-time alerts" />
                 <Toggle checked={prefs.health_reminders} onChange={(v) => setPrefs({ ...prefs, health_reminders: v })} icon={HeartPulse} label="Health reminders" desc="Medication & habit nudges" />
               </div>
+
+              {prefs.push_notifications && pushPerm !== "granted" && (
+                <button
+                  onClick={requestPushPerm}
+                  className="text-xs font-semibold py-2 rounded-lg border border-primary/50 text-primary hover:bg-primary/10"
+                >
+                  {pushPerm === "denied" ? "Push permission blocked — enable in browser" : "Enable browser push permission"}
+                </button>
+              )}
             </div>
 
             <div className="lg:col-span-3 flex justify-end">
@@ -221,9 +294,107 @@ const Settings = () => {
                 Save changes
               </button>
             </div>
+
+            {/* Password */}
+            <div className="lg:col-span-2 glass-card rounded-3xl p-6">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="h-9 w-9 rounded-lg bg-primary/10 grid place-items-center">
+                  <KeyRound className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-lg">Password</h3>
+                  <p className="text-xs text-muted-foreground">Update your account password.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <Field label="New password">
+                  <input type="password" className={inputCls} value={newPwd} onChange={(e) => setNewPwd(e.target.value)} placeholder="At least 8 characters" />
+                </Field>
+                <Field label="Confirm password">
+                  <input type="password" className={inputCls} value={confirmPwd} onChange={(e) => setConfirmPwd(e.target.value)} />
+                </Field>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={changePassword}
+                  disabled={changingPwd || !newPwd}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary border border-border text-sm font-semibold hover:bg-secondary/70 disabled:opacity-50"
+                >
+                  {changingPwd ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />}
+                  Update password
+                </button>
+              </div>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="rounded-3xl p-6 border border-destructive/40 bg-destructive/5">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="h-9 w-9 rounded-lg bg-destructive/15 grid place-items-center">
+                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-lg text-destructive">Danger zone</h3>
+                  <p className="text-xs text-muted-foreground">Permanently delete your account.</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                This will erase your profile, preferences, and notifications. This action cannot be undone.
+              </p>
+              <button
+                onClick={() => { setDeleteOpen(true); setDeleteText(""); }}
+                className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-semibold hover:opacity-90"
+              >
+                <Trash2 className="h-4 w-4" /> Delete my account
+              </button>
+            </div>
           </div>
         )}
       </main>
+
+      {/* Delete confirm modal */}
+      {deleteOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/70 backdrop-blur-sm"
+          onClick={() => !deleting && setDeleteOpen(false)}
+        >
+          <div
+            className="w-full max-w-md bg-card border border-border/60 rounded-2xl p-6 shadow-[var(--shadow-elevated)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 text-destructive mb-2">
+              <AlertTriangle className="h-5 w-5" />
+              <h3 className="font-display font-bold text-lg">Delete account</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Type <span className="font-semibold text-foreground">DELETE</span> to confirm. This is permanent.
+            </p>
+            <input
+              autoFocus
+              className={inputCls + " mt-3"}
+              value={deleteText}
+              onChange={(e) => setDeleteText(e.target.value)}
+              placeholder="DELETE"
+            />
+            <div className="mt-5 flex gap-2 justify-end">
+              <button
+                onClick={() => setDeleteOpen(false)}
+                disabled={deleting}
+                className="px-4 py-2 rounded-lg bg-secondary text-sm font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteAccount}
+                disabled={deleting || deleteText !== "DELETE"}
+                className="px-4 py-2 rounded-lg bg-destructive text-destructive-foreground text-sm font-semibold inline-flex items-center gap-2 disabled:opacity-50"
+              >
+                {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                Confirm delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
